@@ -9,13 +9,13 @@
 
 <body>
 
+    <style>
+    </style>
+
     <script>
 
-        const data = d3.json("src/data/nyc.geojson")
-        console.log(data)
-
         const width = 700;
-        const height = 580;
+        const height = 700;
 
         const svg = d3.select("body")
             .append("svg")
@@ -25,21 +25,27 @@
         const g = svg.append("g");
 
         const albersProjection = d3.geoAlbers()
-            .scale(190000)
+            .scale(1000)
             .rotate([40.7128, 0])
             .center([0, 74.0060])
-            .translate([width / 2, height / 2]);
+            // .translate([width / 2, height / 2]);
             
         const geoPath = d3.geoPath()
             .projection(albersProjection);    
             
-        g.selectAll("path")
-            .data(data)
-            .enter()
-            .append("path")
-            .attr("fill", "#ccc")
-            .attr("stroke", "#333")
-            .attr("d", geoPath);
+        const data = d3.json("src/data/nyc.geojson")
+
+        data.then(function(data) {
+            return (
+                g.selectAll("path")
+                    .data(data.features)
+                    .enter()
+                    .append("path")
+                    .attr("fill", "red")
+                    .attr("stroke", "blue")
+                    .attr("d", geoPath)
+            );
+        });
 
     </script>
 
