@@ -3,49 +3,128 @@
 <html lang="en">
 
 <head>
+
     <title>BanCars</title>
+
     <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <script src="src/data/nyc.json"></script>
+
+    <script src="src/data/crashes.json"></script>
+
+    <style>
+
+        #map {
+            position: fixed;
+        }
+
+        .crash {
+            fill: blue;
+            stroke: red;
+        }
+
+        .crash:hover {
+            fill: yellow;
+        }
+
+        #date {
+            position: fixed;
+        }
+    </style>
+
 </head>
 
 <body>
 
-    <style>
-    </style>
+    <h1>Crashes!</h1>
+
+    <div id="date"></div>
+    <br>
+    <div id="deaths"></div>
+    <br>
+    <div id="sliderContainer">
+        <input id="slider" type="range" min="0" max="10" step="1"><br>
+        <span id="range">2010</span>
+    </div>
+    <div id="map"></div>
+
 
     <script>
 
-        const width = 700;
-        const height = 700;
+        const width = 1000;
+        const height = 1000;
+        let yearInput = null;
+        const year = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"]
 
-        const svg = d3.select("body")
+        const svg = d3.select("#map")
             .append("svg")
             .attr("width", width)
             .attr("height", height);
 
         const g = svg.append("g");
 
-        const albersProjection = d3.geoAlbers()
-            .scale(1000)
-            .rotate([40.7128, 0])
-            .center([0, 74.0060])
-            // .translate([width / 2, height / 2]);
+        const projection = d3.geoAlbers()
+            .scale(190000)
+            .rotate([74.0060, 0])
+            .center([0, 40.7128])
+            .translate([width / 2, height / 2]);
             
-        const geoPath = d3.geoPath()
-            .projection(albersProjection);    
+        const path = d3.geoPath()
+            .projection(projection);    
             
-        const data = d3.json("src/data/nyc.geojson")
+        const nyc = d3.json("src/data/nyc.geojson")
 
-        data.then(function(data) {
+        nyc.then(function(nyc) {
             return (
                 g.selectAll("path")
-                    .data(data.features)
-                    .enter()
-                    .append("path")
-                    .attr("fill", "red")
-                    .attr("stroke", "blue")
-                    .attr("d", geoPath)
-            );
-        });
+                .data(nyc.features)
+                .enter()
+                .append("path")
+                .attr("fill", "#EEF5F8")
+                .attr("stroke", "#169491")
+                .attr("d", path)
+                );
+            });
+        
+            
+        const crashes = d3.json("src/data/crashes.geojson")
+        
+        crashes.then(function(crashes) {
+            return (
+                g.selectAll("path")
+                .data(crashes.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .attr("class", "crash")
+                .on("mouseover", function(d){
+                    d3.select("#date").text(d.properties.crash_date);
+                    d3.select("#deaths").text(d.properties.number_of_persons_killed);
+                    d3.select(this).attr("class", "crash hover");
+                })
+                .on("mouseout", function(d){
+                    d3.select("#date").text("");
+                    d3.select("#deaths").text("");
+                    d3.select(this).attr("class", "crash");
+                })
+                );
+            })
+                        
+        d3.select("#slider").on("input", function() {
+            update(+this.value);
+        })
+
+        function update(value) {
+            document.getElementById("range").innerHTML=year[value];
+            yearInput = year[value];
+            d3.selectAll(".crash")
+                .attr("fill", dateMatch);
+        }
+
+        function dateMatch(data, value) {
+            console.log(crashes)
+        }
+
 
     </script>
 
