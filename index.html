@@ -48,7 +48,6 @@
     </div>
     <div id="map"></div>
 
-
     <script>
 
         const width = 1000;
@@ -72,43 +71,32 @@
         const path = d3.geoPath()
             .projection(projection);    
             
-        const nyc = d3.json("src/data/nyc.geojson")
-
-        nyc.then(function(nyc) {
-            return (
-                g.selectAll("path")
-                .data(nyc.features)
-                .enter()
-                .append("path")
-                .attr("fill", "#EEF5F8")
-                .attr("stroke", "#169491")
-                .attr("d", path)
-                );
-            });
-        
+      
+        g.selectAll("path")
+            .data(nycJson.features)
+            .enter()
+            .append("path")
+            .attr("fill", "#EEF5F8")
+            .attr("stroke", "#169491")
+            .attr("d", path)
             
-        const crashes = d3.json("src/data/crashes.geojson")
-        
-        crashes.then(function(crashes) {
-            return (
-                g.selectAll("path")
-                .data(crashes.features)
-                .enter()
-                .append("path")
-                .attr("d", path)
-                .attr("class", "crash")
-                .on("mouseover", function(d){
-                    d3.select("#date").text(d.properties.crash_date);
-                    d3.select("#deaths").text(d.properties.number_of_persons_killed);
-                    d3.select(this).attr("class", "crash hover");
-                })
-                .on("mouseout", function(d){
-                    d3.select("#date").text("");
-                    d3.select("#deaths").text("");
-                    d3.select(this).attr("class", "crash");
-                })
-                );
+        g.selectAll("path")
+            .data(crashesJson.features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("class", "crash")
+            .on("mouseover", function(d){
+                d3.select("#date").text(d.properties.crash_date);
+                d3.select("#deaths").text(d.properties.number_of_persons_killed);
+                d3.select(this).attr("class", "crash hover");
             })
+            .on("mouseout", function(d){
+                d3.select("#date").text("");
+                d3.select("#deaths").text("");
+                d3.select(this).attr("class", "crash");
+            })
+            
                         
         d3.select("#slider").on("input", function() {
             update(+this.value);
