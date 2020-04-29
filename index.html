@@ -14,8 +14,13 @@
 
     <style>
 
-        #map {
-            position: fixed;
+        body, h1 {
+            position: absolute;
+        }
+
+        #infobox {
+            position: absolute;
+            top: 100px;
         }
 
         .crash {
@@ -27,9 +32,7 @@
             fill: yellow;
         }
 
-        #date {
-            position: fixed;
-        }
+
     </style>
 
 </head>
@@ -38,14 +41,17 @@
 
     <h1>Crashes!</h1>
 
-    <div id="date"></div>
-    <br>
-    <div id="deaths"></div>
-    <br>
-    <div id="sliderContainer">
+    <div id='infobox'>
+    <p id="date"></p>
+    <p id="injuries"></p>
+    <p id="deaths"></p>
+    <p id="contributing-factors"></p>
+    </div>
+
+    <!-- <div id="sliderContainer">
         <input id="slider" type="range" min="0" max="10" step="1"><br>
         <span id="range">2010</span>
-    </div>
+    </div> -->
     <div id="map"></div>
 
     <script>
@@ -63,13 +69,21 @@
         const g = svg.append("g");
 
         const projection = d3.geoAlbers()
-            .scale(190000)
-            .rotate([74.0060, 0])
-            .center([0, 40.7128])
-            .translate([width / 2, height / 2]);
-            
+            .scale(100000)
+            .rotate([74, 0])
+            .center([0, 40.8])
+        
         const path = d3.geoPath()
-            .projection(projection);    
+            .projection(projection);
+        
+        const zoom = d3.zoom()
+            .scaleExtent([1, 8])
+            .on("zoom", function() {
+                g.selectAll("path")
+                    .attr("transform", d3.event.transform);
+            });
+        
+            svg.call(zoom);
             
       
         g.selectAll("path")
@@ -87,8 +101,55 @@
             .attr("d", path)
             .attr("class", "crash")
             .on("mouseover", function(d){
-                d3.select("#date").text(d.properties.crash_date);
-                d3.select("#deaths").text(d.properties.number_of_persons_killed);
+
+                const crashDate = new Date(d.properties.crash_date)
+
+                const crashDateString = crashDate.toDateString();
+
+                const crashTime = d.properties.crash_time.split(":")
+                
+                const amPm = crashTime[0] >= 12 ? "AM" : "PM";
+
+                let crashHours = crashTime[0];
+
+                let crashMinutes = crashTime[1];
+
+                crashHours = crashHours % 12;
+
+                crashHours = crashHours ? crashHours : 12;
+
+                const crashTimeString = crashHours + ":" + crashMinutes + " " + amPm;
+
+                let contributingFactors = [];
+
+                if (d.properties.contributing_factor_vehicle_1 && d.properties.contributing_factor_vehicle_1 != "Unspecified") {
+                    contributingFactors.push(d.properties.contributing_factor_vehicle_1);
+                }
+
+                if (d.properties.contributing_factor_vehicle_2 && d.properties.contributing_factor_vehicle_2 != "Unspecified") {
+                    contributingFactors.push(d.properties.contributing_factor_vehicle_2);
+                }
+
+                if (d.properties.contributing_factor_vehicle_3 && d.properties.contributing_factor_vehicle_3 != "Unspecified") {
+                    contributingFactors.push(d.properties.contributing_factor_vehicle_3);
+                }
+
+                if (d.properties.contributing_factor_vehicle_4 && d.properties.contributing_factor_vehicle_4 != "Unspecified") {
+                    contributingFactors.push(d.properties.contributing_factor_vehicle_4);
+                }
+
+                if (d.properties.contributing_factor_vehicle_5 && d.properties.contributing_factor_vehicle_5 != "Unspecified") {
+                    contributingFactors.push(d.properties.contributing_factor_vehicle_5);
+                }
+
+                if (contributingFactors.length === 0) {
+                    contributingFactors.push("Unspecified")
+                }
+
+                d3.select("#date").text(`Date: ${crashDateString}, ${crashTimeString}`);
+                d3.select("#injuries").text(`Injuries: ${d.properties.number_of_persons_injured}`)
+                d3.select("#deaths").text(`Deaths: ${d.properties.number_of_persons_killed}`);
+                d3.select("#contributing-factors").text(`Contributing factors: ${contributingFactors}`);
                 d3.select(this).attr("class", "crash hover");
             })
             .on("mouseout", function(d){
@@ -110,7 +171,6 @@
         }
 
         function dateMatch(data, value) {
-            console.log(crashes)
         }
 
 
