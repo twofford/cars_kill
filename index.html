@@ -31,7 +31,7 @@
     </div>
 
     <header>
-    <h1>NYC Motor Vehicle Collisions</h1>
+    <h1>Vision Zero?</h1>
     </header>
 
     <form>
@@ -74,7 +74,7 @@
                data: {
                    "$$app_token": "GeazDF3xhBoHQv3NWt30dElQb",
                    "$limit": 5000,
-                   "$where": `${crashDate}`
+                   "$where": `${crashDate} AND (number_of_persons_injured > 0 OR number_of_persons_killed > 0)`
                }
            }).done(res => {
 
@@ -83,6 +83,13 @@
 
                 //create window for tooltips
                 const infoWindow = d3.select("#infowindow").style("opacity", 0);
+
+                //find number of crashes
+                const numCrashes = res.features.length;
+
+                //replace 'zero' in header with number of crashes
+                d3.select("h1")
+                    .html(`Vision ${numCrashes}`)
 
                 //draw crashes
                 g.selectAll("path.crash")
