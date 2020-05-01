@@ -84,7 +84,7 @@
                 //create window for tooltips
                 const infoWindow = d3.select("#infowindow").style("opacity", 0);
 
-                //bind crash data
+                //draw crashes
                 g.selectAll("path.crash")
                     .remove("path")
                     .data(res.features)
@@ -170,9 +170,11 @@
             })
         }
 
+        //set map dimensions
         const width = 750;
         const height = 750;
 
+        //create map element
         const svg = d3.select("#map")
             .append("svg")
             .attr("width", width)

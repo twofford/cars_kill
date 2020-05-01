@@ -54,6 +54,14 @@ svg {
     stroke: gray;
 }
 
+#infowindow {
+    position: absolute;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: rgba(245, 245, 245, .9);
+    font-size: 14px;
+    font-weight: bold;
+}
 
 #spinner {
     position: absolute;
@@ -107,13 +115,4 @@ svg {
         transform: scaleY(1.0);
         -webkit-transform: scaleY(1.0);
     }
-}
-
-#infowindow {
-    /* background: red;
-    width: 200px;
-    height: 200px; */
-    position: absolute;
-    /* left: 50%;
-    top: 50%; */
 }
