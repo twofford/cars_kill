@@ -4,19 +4,15 @@
 
 <head>
 
-    <title>Ban Cars</title>
+    <title>🚗 🙅‍♂️</title>
 
     <link rel="stylesheet" type="text/css" href="src/styles/index.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
 
     <script src="src/data/nyc.json"></script>
-
-    <script src="src/data/cyclist_deaths.json"></script>
-
-    <script src="src/data/crashes.json"></script>
-
-    <script src="https://kit.fontawesome.com/7543c6b46d.js" crossorigin="anonymous"></script>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 
@@ -26,35 +22,156 @@
 
 <body>
 
-    <h1>Ban Cars, Brr Brr</h1>
-
-    <div id="infobox">
-    <p id="date"></p>
-    <p id="injuries"></p>
-    <p id="deaths"></p>
-    <p id="contributing-factors"></p>
+    <div id="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
     </div>
 
-    <!-- <div id="sliderContainer">
-        <input id="slider" type="range" min="0" max="10" step="1"><br>
-        <span id="range">2010</span>
-    </div> -->
+    <header>
+    <h1>NYC Motor Vehicle Collisions</h1>
+    </header>
+
+    <form>
+    <input id="crash-date-input" type="date"></input>
+    <br>
+    <button type="button" onclick="updateCrashes()">Show me the collisions!</button>
+    </form>
+
+    <div id="infowindow">
+        <p id="time"></p>
+        <p id="injuries"></p>
+        <p id="deaths"></p>
+        <p id="vehicles-involved"></p>
+        <p id="contributing-factors"></p>
+    </div>
+
     <div id="map"></div>
 
     <script>
 
+        //hide spinner by default
+        d3.select("#spinner")
+            .attr("style", "display: none");
+            
+        updateCrashes = () => {
+
+           // format user input for API call
+           let crashDate = document.getElementById("crash-date-input").value;
+           crashDate = new Date(crashDate).toISOString();
+           crashDate = crashDate.slice(0, crashDate.length - 1);
+           crashDate = `crash_date="${crashDate}"`;
+           
+           // show spinner when api call begins
+           d3.select("#spinner").attr("style", "display: block");
+
+           // api call
+           $.ajax({
+               url: "https://data.cityofnewyork.us/resource/h9gi-nx95.geojson",
+               type: "GET",
+               data: {
+                   "$$app_token": "GeazDF3xhBoHQv3NWt30dElQb",
+                   "$limit": 5000,
+                   "$where": `${crashDate}`
+               }
+           }).done(res => {
+
+                //hide spinner when api call ends
+                d3.select("#spinner").attr("style", "display: none");
+
+                //create window for tooltips
+                const infoWindow = d3.select("#infowindow").style("opacity", 0);
+
+                //bind crash data
+                g.selectAll("path.crash")
+                    .remove("path")
+                    .data(res.features)
+                    .enter()
+                    .append("path")
+                    .attr("d", path)
+                    .attr("class", "crash")
+                    .on("mouseover", function (d) {
+                       
+                       //format crash time
+                       const crashTime = d.properties.crash_time.split(":")
+                       const amPm = crashTime[0] >= 12 ? "AM" : "PM";
+                       let crashHours = crashTime[0];
+                       let crashMinutes = crashTime[1];
+                       crashHours = crashHours % 12;
+                       crashHours = crashHours ? crashHours : 12;
+                       const crashTimeString = crashHours + ":" + crashMinutes + " " + amPm;
+                       
+                       //format contributing factors
+                       let contributingFactors = [];
+                       if (d.properties.contributing_factor_vehicle_1 && d.properties.contributing_factor_vehicle_1 != "Unspecified") {
+                           contributingFactors.push(d.properties.contributing_factor_vehicle_1);
+                        }
+                        if (d.properties.contributing_factor_vehicle_2 && d.properties.contributing_factor_vehicle_2 != "Unspecified") {
+                            contributingFactors.push(d.properties.contributing_factor_vehicle_2);
+                        }
+                        if (d.properties.contributing_factor_vehicle_3 && d.properties.contributing_factor_vehicle_3 != "Unspecified") {
+                            contributingFactors.push(d.properties.contributing_factor_vehicle_3);
+                        }
+                        if (d.properties.contributing_factor_vehicle_4 && d.properties.contributing_factor_vehicle_4 != "Unspecified") {
+                            contributingFactors.push(d.properties.contributing_factor_vehicle_4);
+                        }
+                        if (d.properties.contributing_factor_vehicle_5 && d.properties.contributing_factor_vehicle_5 != "Unspecified") {
+                            contributingFactors.push(d.properties.contributing_factor_vehicle_5);
+                        }
+                        if (contributingFactors.length === 0) {
+                            contributingFactors.push("Unspecified")
+                        }
+                        let uniqueFactors = [...new Set(contributingFactors)];
+                        uniqueFactors = uniqueFactors.join(", ");
+                        
+                        //format vehicles involved
+                        let vehiclesInvolved = 0;
+                        if (d.properties.contributing_factor_vehicle_1) {
+                            vehiclesInvolved += 1;
+                        }
+                        if (d.properties.contributing_factor_vehicle_2) {
+                            vehiclesInvolved += 1;
+                        }
+                        if (d.properties.contributing_factor_vehicle_3) {
+                            vehiclesInvolved += 1;
+                        }
+                        if (d.properties.contributing_factor_vehicle_4) {
+                            vehiclesInvolved += 1;
+                        }
+                        if (d.properties.contributing_factor_vehicle_5) {
+                            vehiclesInvolved += 1;
+                        }
+                        
+                        //show infowindow
+                        infoWindow.transition()
+                            .duration(200)
+                            .style("opacity", 1)
+                            .style("left", (d3.event.pageX + 10) + "px")
+                            .style("top", (d3.event.pageY + 10) + "px");
+                        
+                        //display crash data
+                        d3.select("#time").html(`Time: ${crashTimeString}</i>`)
+                        d3.select("#injuries").html(`Injuries: ${d.properties.number_of_persons_injured}</i>`)
+                        d3.select("#deaths").html(`Deaths: ${d.properties.number_of_persons_killed}</i>`);
+                        d3.select("#vehicles-involved").text(`Vehicles Involved: ${vehiclesInvolved}`);
+                        d3.select("#contributing-factors").text(`Contributing Factors: ${uniqueFactors}`);
+                        d3.select(this).attr("class", "crash hover");
+                    })
+
+                    .on("mouseout", function (d) {
+
+                        //hide infowindow
+                        infoWindow.transition()
+                            .duration(200)
+                            .style("opacity", 0);
+                    })
+            })
+        }
+
         const width = 750;
         const height = 750;
-        // let yearInput = null;
-        // const year = ["2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"]
-
-
-        // FETCH CRASHES SHOULD RETURN A POJO, BUT INSTEAD IT'S RETURNING A PROMISE (I THINK). WHEN I CONSOLE.LOG
-        // ITS RETURN VALUE, IT SHOWS UP AS A POJO! WHY IS IT RETURNING A PROMISE?
-
-        // const crashes = fetchCrashes();
-
-        // console.log(crashes);
 
         const svg = d3.select("#map")
             .append("svg")
@@ -70,111 +187,14 @@
         
         const path = d3.geoPath()
             .projection(projection);
-        
-        const zoom = d3.zoom()
-            .scaleExtent([1, 8])
-            .on("zoom", function() {
-                g.selectAll("path")
-                    .attr("transform", d3.event.transform);
-            });
-        
-            svg.call(zoom);
 
         g.selectAll("path")
             .data(nyc.features)
             .enter()
             .append("path")
-            .attr("fill", "#EEF5F8")
-            .attr("stroke", "#169491")
+            .attr("fill", "white")
+            .attr("stroke", "black")
             .attr("d", path)
-            
-        g.selectAll("path")
-            .data(crashesJson.features)
-            .enter()
-            .append("path")
-            .attr("d", path)
-            .attr("class", "crash")
-            .on("mouseover", function(d){
-
-                const crashDate = new Date(d.properties.crash_date)
-
-                const crashDateString = crashDate.toDateString();
-
-                const crashTime = d.properties.crash_time.split(":")
-                
-                const amPm = crashTime[0] >= 12 ? "AM" : "PM";
-
-                let crashHours = crashTime[0];
-
-                let crashMinutes = crashTime[1];
-
-                crashHours = crashHours % 12;
-
-                crashHours = crashHours ? crashHours : 12;
-
-                const crashTimeString = crashHours + ":" + crashMinutes + " " + amPm;
-
-                let contributingFactors = [];
-
-                if (d.properties.contributing_factor_vehicle_1 && d.properties.contributing_factor_vehicle_1 != "Unspecified") {
-                    contributingFactors.push(d.properties.contributing_factor_vehicle_1);
-                }
-
-                if (d.properties.contributing_factor_vehicle_2 && d.properties.contributing_factor_vehicle_2 != "Unspecified") {
-                    contributingFactors.push(d.properties.contributing_factor_vehicle_2);
-                }
-
-                if (d.properties.contributing_factor_vehicle_3 && d.properties.contributing_factor_vehicle_3 != "Unspecified") {
-                    contributingFactors.push(d.properties.contributing_factor_vehicle_3);
-                }
-
-                if (d.properties.contributing_factor_vehicle_4 && d.properties.contributing_factor_vehicle_4 != "Unspecified") {
-                    contributingFactors.push(d.properties.contributing_factor_vehicle_4);
-                }
-
-                if (d.properties.contributing_factor_vehicle_5 && d.properties.contributing_factor_vehicle_5 != "Unspecified") {
-                    contributingFactors.push(d.properties.contributing_factor_vehicle_5);
-                }
-
-                if (contributingFactors.length === 0) {
-                    contributingFactors.push("Unspecified")
-                }
-
-                let uniqueFactors = [...new Set(contributingFactors)];
-
-                uniqueFactors = uniqueFactors.join(", ");
-
-                d3.select("#infobox").attr("class", "visible")
-                d3.select("#date").html(`<i class="far fa-calendar-alt">: ${crashDateString}, ${crashTimeString}</i>`)
-                d3.select("#injuries").html(`<i class="fas fa-user-injured">: ${d.properties.number_of_persons_injured}</i>`)
-                d3.select("#deaths").html(`<i class="fas fa-skull-crossbones">: ${d.properties.number_of_persons_killed}</i>`);
-                d3.select("#contributing-factors").text(`Contributing Factors: ${uniqueFactors}`);
-                d3.select(this).attr("class", "crash hover");
-            })
-            .on("mouseout", function(d){
-                d3.select("#infobox").attr("class", "hidden")
-                d3.select("#date").text("");
-                d3.select("#injuries").text("");
-                d3.select("#deaths").text("");
-                d3.select("#contributing-factors").text("");
-                d3.select(this).attr("class", "crash");
-            })
-            
-                        
-        // d3.select("#slider").on("input", function() {
-        //     update(+this.value);
-        // })
-
-        // function update(value) {
-        //     document.getElementById("range").innerHTML=year[value];
-        //     yearInput = year[value];
-        //     d3.selectAll(".crash")
-        //         .attr("fill", dateMatch);
-        // }
-
-        // function dateMatch(data, value) {
-        // }
-
 
     </script>
 
