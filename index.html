@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>🚗 🙅‍♂️</title>
+    <title>🚗🙅‍♂️</title>
 
     <link rel="stylesheet" type="text/css" href="src/styles/index.css">
 
@@ -35,9 +35,9 @@
     </header>
 
     <form>
-    <input id="crash-date-input" type="date"></input>
-    <br>
-    <button type="button" onclick="updateCrashes()">Show me the collisions!</button>
+        <input id="crash-date-input" type="date"></input>
+        <br>
+        <button type="button" onclick="updateCrashes()">Show me the collisions!</button>
     </form>
 
     <div id="infowindow">
@@ -48,13 +48,13 @@
         <p id="contributing-factors"></p>
     </div>
 
+    <div id="barchart"></div>
     <div id="map"></div>
 
     <script>
 
-        //hide spinner by default
-        d3.select("#spinner")
-            .attr("style", "display: none");
+        // hide spinner by default
+        d3.select("#spinner").attr("style", "display: none");
             
         updateCrashes = () => {
 
@@ -78,21 +78,102 @@
                }
            }).done(res => {
 
-                //hide spinner when api call ends
+                // create data object for barchart
+                let contributingFactorsForBarchart = {};
+
+                for (let index = 0; index < res.features.length; index++) {
+
+                    const crash = res.features[index];
+
+                    if (crash.properties.contributing_factor_vehicle_1) {
+                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] = 1;
+                    };
+
+                    if (crash.properties.contributing_factor_vehicle_2) {
+                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_2] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_2] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_2] = 1;
+                    };
+
+                    if (crash.properties.contributing_factor_vehicle_3) {
+                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_3] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_3] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_3] = 1;
+                    };
+
+                    if (crash.properties.contributing_factor_vehicle_4) {
+                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_4] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_4] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_4] = 1;
+                    };
+
+                    if (crash.properties.contributing_factor_vehicle_5) {
+                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_5] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_5] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_5] = 1;
+                    };
+                    
+                }
+
+                //create data array for barchart
+                let contributingFactorsArray = [];
+
+                for (const factor in contributingFactorsForBarchart) {
+                    contributingFactorsArray.push([factor, contributingFactorsForBarchart[factor]]);
+                }
+
+                contributingFactorsArray.sort((a, b) => {
+                    return a[1] - b[1];
+                });
+
+                // hide spinner when api call ends
                 d3.select("#spinner").attr("style", "display: none");
 
-                //create window for tooltips
+                // create window for tooltips
                 const infoWindow = d3.select("#infowindow").style("opacity", 0);
 
-                //find number of crashes
-                const numCrashes = res.features.length;
+                // find number of crashes
+                let numCrashes = res.features.length;
 
-                //replace 'zero' in header with number of crashes
-                d3.select("h1")
-                    .html(`Vision ${numCrashes}`)
+                numCrashes === 0 ? numCrashes = "Zero" : numCrashes
 
-                //draw crashes
-                g.selectAll("path.crash")
+                // replace 'zero' in header with number of crashes
+                d3.select("h1").html(`Vision ${numCrashes}`)
+
+//----------------------------------------------------------------------------//
+
+                //draw barchart
+
+                const barchartWidth = 500;
+                const barchartHeight = 500;
+
+                 const barchartSvg = d3.select("#barchart")
+                   .append("svg")
+                   .attr("width", barchartWidth)
+                   .attr("height", barchartHeight);
+                
+                const bars = barchartSvg.selectAll("circle")
+                    .data(contributingFactorsArray)
+                    .enter()
+                    .append("circle")
+                
+                bars.attr("cx", function(d, i) {
+                    return (i * 50) + 25;
+                })
+                .attr("cy", barchartHeight/2)
+                .attr("r", function(d) {
+                    return d[1] * 10;
+                });
+                // const barchartGroup = barchartSvg.append("g")
+
+                // barchartSvg.selectAll("g")
+                //     .data(contributingFactorsArray)
+                //     .enter().append("rect")
+                //     .attr("width", d => {return d[1]})
+                //     .attr("height", "10px")
+                //     .attr("margin", "10px")
+                //     .style("background", "red")
+
+
+                
+                // console.log(contributingFactorsArray);
+                
+//----------------------------------------------------------------------------//
+
+                // draw crashes
+                mapGroup.selectAll("path.crash")
                     .remove("path")
                     .data(res.features)
                     .enter()
@@ -101,7 +182,7 @@
                     .attr("class", "crash")
                     .on("mouseover", function (d) {
                        
-                       //format crash time
+                       // format crash time
                        const crashTime = d.properties.crash_time.split(":")
                        const amPm = crashTime[0] >= 12 ? "AM" : "PM";
                        let crashHours = crashTime[0];
@@ -110,7 +191,7 @@
                        crashHours = crashHours ? crashHours : 12;
                        const crashTimeString = crashHours + ":" + crashMinutes + " " + amPm;
                        
-                       //format contributing factors
+                       // format contributing factors
                        let contributingFactors = [];
                        if (d.properties.contributing_factor_vehicle_1 && d.properties.contributing_factor_vehicle_1 != "Unspecified") {
                            contributingFactors.push(d.properties.contributing_factor_vehicle_1);
@@ -133,7 +214,7 @@
                         let uniqueFactors = [...new Set(contributingFactors)];
                         uniqueFactors = uniqueFactors.join(", ");
                         
-                        //format vehicles involved
+                        // format vehicles involved
                         let vehiclesInvolved = 0;
                         if (d.properties.contributing_factor_vehicle_1) {
                             vehiclesInvolved += 1;
@@ -151,14 +232,14 @@
                             vehiclesInvolved += 1;
                         }
                         
-                        //show infowindow
+                        // show infowindow
                         infoWindow.transition()
                             .duration(200)
                             .style("opacity", 1)
                             .style("left", (d3.event.pageX + 10) + "px")
                             .style("top", (d3.event.pageY + 10) + "px");
                         
-                        //display crash data
+                        // display crash data
                         d3.select("#time").html(`Time: ${crashTimeString}</i>`)
                         d3.select("#injuries").html(`Injuries: ${d.properties.number_of_persons_injured}</i>`)
                         d3.select("#deaths").html(`Deaths: ${d.properties.number_of_persons_killed}</i>`);
@@ -169,7 +250,7 @@
 
                     .on("mouseout", function (d) {
 
-                        //hide infowindow
+                        // hide infowindow
                         infoWindow.transition()
                             .duration(200)
                             .style("opacity", 0);
@@ -177,17 +258,17 @@
             })
         }
 
-        //set map dimensions
-        const width = 750;
-        const height = 750;
+        // set map dimensions
+        const mapWidth = 750;
+        const mapHeight = 750;
 
-        //create map element
-        const svg = d3.select("#map")
+        // create map element
+        const mapSvg = d3.select("#map")
             .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+            .attr("width", mapWidth)
+            .attr("height", mapHeight);
 
-        const g = svg.append("g");
+        const mapGroup = mapSvg.append("g");
 
         const projection = d3.geoAlbers()
             .scale(100000)
@@ -197,7 +278,8 @@
         const path = d3.geoPath()
             .projection(projection);
 
-        g.selectAll("path")
+        // draw map
+        mapGroup.selectAll("path")
             .data(nyc.features)
             .enter()
             .append("path")
