@@ -63,6 +63,11 @@ svg {
     font-weight: bold;
 }
 
+#barchart {
+    position: absolute;
+    right: 100px;
+}
+
 #spinner {
     position: absolute;
     left: 50%;

@@ -115,8 +115,10 @@
                 }
 
                 contributingFactorsArray.sort((a, b) => {
-                    return a[1] - b[1];
+                    return b[1] - a[1];
                 });
+
+                contributingFactorsArray = contributingFactorsArray.slice(0, 5);
 
                 // hide spinner when api call ends
                 d3.select("#spinner").attr("style", "display: none");
@@ -139,37 +141,49 @@
                 const barchartWidth = 500;
                 const barchartHeight = 500;
 
-                 const barchartSvg = d3.select("#barchart")
+                const barchartSvg = d3.select("#barchart")
                    .append("svg")
                    .attr("width", barchartWidth)
                    .attr("height", barchartHeight);
+
+                const barHeight = 25;
+
+                console.log(contributingFactorsArray.slice(-1)[0][1]);
+                console.log(contributingFactorsArray[0][1]);
+
+                const scale = d3.scaleLinear()
+                    .domain([contributingFactorsArray.slice(-1)[0][1], contributingFactorsArray[0][1]])
+                    .range([0, barchartWidth - 100]);
                 
-                const bars = barchartSvg.selectAll("circle")
+                const xAxis = d3.axisBottom()
+                    .scale(scale)
+
+                const bars = barchartSvg.selectAll("g")
                     .data(contributingFactorsArray)
-                    .enter()
-                    .append("circle")
-                
-                bars.attr("cx", function(d, i) {
-                    return (i * 50) + 25;
-                })
-                .attr("cy", barchartHeight/2)
-                .attr("r", function(d) {
-                    return d[1] * 10;
-                });
-                // const barchartGroup = barchartSvg.append("g")
+                    .join("g")
 
-                // barchartSvg.selectAll("g")
-                //     .data(contributingFactorsArray)
-                //     .enter().append("rect")
-                //     .attr("width", d => {return d[1]})
-                //     .attr("height", "10px")
-                //     .attr("margin", "10px")
-                //     .style("background", "red")
+                bars.append("g")
+                    .call(xAxis);
 
+                bars.append("rect")
+                    .attr("fill", "steelblue")
+                    .attr("width", d => {
+                        return d[1];
+                    })
+                    .attr("height", barHeight)
+                    .attr("y", (d, i) => {
+                        return (i * 30) + barHeight;
+                    })   
 
+                bars.append("text")
+                    .attr("fill", "black")
+                    .attr("x", 0)
+                    .attr("y", (d, i) => {
+                        return (i * 30) + barHeight;
+                    })
+                    .text(d => d[0])   
                 
-                // console.log(contributingFactorsArray);
-                
+  
 //----------------------------------------------------------------------------//
 
                 // draw crashes
