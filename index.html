@@ -6,6 +6,8 @@
 
     <title>🚗🙅‍♂️</title>
 
+    <meta property="og:image" content="https://twofford.github.io/images/Slick.png" />
+
     <link rel="stylesheet" type="text/css" href="src/styles/index.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
@@ -138,6 +140,12 @@
 
                 //draw barchart
 
+                const widthFinder = (contributingFactorNum) => {
+                    const largestContributingFactorNum = contributingFactorsArray[0][1];
+                    const percentage = contributingFactorNum / largestContributingFactorNum;
+                    return barchartWidth * percentage;
+                }
+
                 const barchartWidth = 500;
                 const barchartHeight = 500;
 
@@ -148,15 +156,14 @@
 
                 const barHeight = 25;
 
-                console.log(contributingFactorsArray.slice(-1)[0][1]);
-                console.log(contributingFactorsArray[0][1]);
-
                 const scale = d3.scaleLinear()
                     .domain([contributingFactorsArray.slice(-1)[0][1], contributingFactorsArray[0][1]])
-                    .range([0, barchartWidth - 100]);
+                    .range([0, barchartWidth]);
                 
                 const xAxis = d3.axisBottom()
                     .scale(scale)
+                
+                const yAxis = d3.axisLeft()
 
                 const bars = barchartSvg.selectAll("g")
                     .data(contributingFactorsArray)
@@ -168,7 +175,7 @@
                 bars.append("rect")
                     .attr("fill", "steelblue")
                     .attr("width", d => {
-                        return d[1];
+                        return widthFinder(d[1]);
                     })
                     .attr("height", barHeight)
                     .attr("y", (d, i) => {
