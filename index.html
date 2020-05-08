@@ -119,8 +119,8 @@
                 contributingFactorsArray.sort((a, b) => {
                     return b[1] - a[1];
                 });
-
-                contributingFactorsArray = contributingFactorsArray.slice(0, 5);
+                
+                contributingFactorsArray[0][0] === 'Unspecified' ? contributingFactorsArray = contributingFactorsArray.slice(1, 6) : contributingFactorsArray = contributingFactorsArray.slice(0, 5);
 
                 // hide spinner when api call ends
                 d3.select("#spinner").attr("style", "display: none");
@@ -156,14 +156,26 @@
 
                 const barHeight = 25;
 
-                const scale = d3.scaleLinear()
+                const xScale = d3.scaleLinear()
                     .domain([contributingFactorsArray.slice(-1)[0][1], contributingFactorsArray[0][1]])
                     .range([0, barchartWidth]);
                 
                 const xAxis = d3.axisBottom()
-                    .scale(scale)
+                    .scale(xScale)
+
+                console.log(contributingFactorsArray);
+
+                const yScale = d3.scaleBand()
+                    .domain([contributingFactorsArray[0][0],
+                            contributingFactorsArray[1][0],
+                            contributingFactorsArray[2][0],
+                            contributingFactorsArray[3][0],
+                            contributingFactorsArray[4][0]
+                            ])
+                    .range([0, barchartHeight]);
                 
                 const yAxis = d3.axisLeft()
+                    .scale(yScale);
 
                 const bars = barchartSvg.selectAll("g")
                     .data(contributingFactorsArray)
@@ -171,6 +183,9 @@
 
                 bars.append("g")
                     .call(xAxis);
+                
+                bars.append("g")
+                    .call(yAxis);
 
                 bars.append("rect")
                     .attr("fill", "steelblue")
@@ -190,7 +205,6 @@
                     })
                     .text(d => d[0])   
                 
-  
 //----------------------------------------------------------------------------//
 
                 // draw crashes
