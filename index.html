@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>🚗🙅‍♂️</title>
+    <title>CARS KILL NYC</title>
 
     <meta property="og:image" content="https://twofford.github.io/images/Slick.png" />
 
@@ -17,6 +17,8 @@
     <script src="src/data/nyc.json"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+    <script src="https://kit.fontawesome.com/7543c6b46d.js" crossorigin="anonymous"></script>
 
 </head>
 
@@ -36,35 +38,43 @@
 
     <div id="modals-container">
     
-        <button id="modal-btn-1">what is this?</button>
+        <button id="modal-btn-1" class="modal-btn">what is this?</button>
         
         <div id="modal-1" class="modal">
         
             <div class="modal-content">
-                <span id="close-1" class="close">Close</span>
-                <p>Modal content</p>
+                <span id="close-1" class="close">&times;</span>
+                <br>
+                <span><strong>CARS KILL NYC</strong> is a data visualization designed to show how many New Yorkers are injured or killed by cars each day in New York City. These injuries and deaths are completely avoidable. In a city like New York, where public transit is widely accesible and bicycles are a realistic commuting option, we don't need cars to get around most of the time. Data for <strong>CARS KILL NYC</strong> is collected from <a href="https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95">NYC Open Data</a>. This data only reflects crashes reported to the NYPD. It is updated weekly.</span>
             </div>
         
         </div>
 
-        <button id="modal-btn-2">how it works</button>
+        <button id="modal-btn-2" class="modal-btn">how it works</button>
         
         <div id="modal-2" class="modal">
         
             <div class="modal-content">
-                <span id="close-2" class="close">Close</span>
-                <p>Modal content</p>
+                <span id="close-2" class="close">&times;</span>
+                <br>
+                <span>Choose a date in the box below and click the button marked "Show collisions." Collisions from that day will be marked on the map. Hover over a collision for more details about it. The chart to the left shows the leading causes of collisions that day. </span>
+                <!--Put a gif here-->
             </div>
         
         </div>
 
-        <button id="modal-btn-3">about me</button>
+        <button id="modal-btn-3" class="modal-btn">about me</button>
         
         <div id="modal-3" class="modal">
         
             <div class="modal-content">
-                <span id="close-3" class="close">Close</span>
-                <p>Modal content</p>
+                <span id="close-3" class="close">&times;</span>
+                <br>
+                <span>My name is Taylor Wofford. I'm a software developer based in NYC. I enjoy riding my bike around the city, but wish it was safer. You can get in touch with me in the following places:</span>
+                <br><br>
+                <span class="icons"><a href="https://www.linkedin.com/in/taylor-wofford-931b3695/"><i class="fab fa-linkedin"></i></a> <a href="https://angel.co/u/taylor-wofford"><i class="fab fa-angellist"></i></a> <a href="https://github.com/twofford"><i class="fab fa-github"></i></a></span>
+                <br><br>
+                <span>You can also email me at taylor dot wofford at gmail dot com.</span>
             </div>
         
         </div>
@@ -73,9 +83,9 @@
     </header>
 
     <form>
-        <input id="crash-date-input" type="date"></input>
+        <input id="crash-date-input" type="date" placeholder="Choose a date"></input>
         <br>
-        <button type="button" onclick="updateCrashes()">Show me the collisions!</button>
+        <button type="button" class="btn" onclick="updateCrashes()">Show collisions</button>
     </form>
 
     <div id="infowindow">
@@ -86,8 +96,12 @@
         <p id="contributing-factors"></p>
     </div>
 
-    <div id="barchart"></div>
-    <div id="map"></div>
+    
+    <div id="map">
+        <div id="barchart">
+            <div class="date-display">Leading causes of death/injury</div>
+        </div>
+    </div>
 
     <script>
 
@@ -158,6 +172,7 @@
 
            // format user input for API call
            let crashDate = document.getElementById("crash-date-input").value;
+           const displayDate = new Date(crashDate).toDateString();
            crashDate = new Date(crashDate).toISOString();
            crashDate = crashDate.slice(0, crashDate.length - 1);
            crashDate = `crash_date="${crashDate}"`;
@@ -232,17 +247,16 @@
                 d3.select("#spinner").attr("style", "display: none");
 
                 // create window for tooltips
-                const infoWindow = d3.select("#infowindow").style("opacity", 0);
+                const infoWindow = d3.select("#infowindow")
 
                 // find number of crashes
                 let numCrashes = res.features.length;
 
-                numCrashes === 0 ? numCrashes = "Zero" : numCrashes
-
-                // replace 'zero' in header with number of crashes
-                // d3.select("h1").html(`Vision ${numCrashes}`)
-
                 //draw barchart
+
+                d3.select("#barchart")
+                    .style("display", "block")
+
                 const x = d3.scaleLinear()
                    .domain([0, d3.max(contributingFactorsArray, d => d.value)])
                    .range([margin.left, barchartWidth - margin.right]);
@@ -267,7 +281,7 @@
                     .remove("g")
                 
                 barchartGroup.append("g")
-                    .attr("fill", "#ff71ce")
+                    .attr("fill", "red")
                     .selectAll("rect")
                     .data(contributingFactorsArray)
                     .join("rect")
@@ -294,6 +308,8 @@
 
                 barchartGroup.append("g")
                     .call(yAxis);
+
+                d3.select("#date-display").html(displayDate);
 
                 // draw crashes
                 mapGroup.selectAll("path.crash")
@@ -358,7 +374,7 @@
                         // show infowindow
                         infoWindow.transition()
                             .duration(200)
-                            .style("opacity", 1)
+                            .style("display", "block")
                             .style("left", (d3.event.pageX + 10) + "px")
                             .style("top", (d3.event.pageY + 10) + "px");
                         
@@ -376,7 +392,7 @@
                         // hide infowindow
                         infoWindow.transition()
                             .duration(200)
-                            .style("opacity", 0);
+                            .style("display", "none");
                     })
             })
         }
