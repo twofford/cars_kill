@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "d3": "^5.16.0",
-    "leaflet": "^1.6.0"
+    "leaflet": "^1.6.0",
+    "micromodal": "^0.4.6"
   }
 }

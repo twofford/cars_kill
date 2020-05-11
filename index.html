@@ -18,13 +18,11 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 
-    <script src="src/scripts/api_calls.js"></script>
-
 </head>
 
 <body>
 
-    <div id="spinner">
+    <div id="spinner" class="hidden">
         <div class="rect1"></div>
         <div class="rect2"></div>
         <div class="rect3"></div>
@@ -33,7 +31,44 @@
     </div>
 
     <header>
-    <h1>Vision Zero?</h1>
+
+    <h1>cars kill nyc</h1>
+
+    <!--Modals-->
+
+    <button id="myBtn-1">Open Modal</button>
+    
+    <div id="myModal-1" class="modal">
+    
+        <div class="modal-content-1">
+            <span id="close-1" class="close">Close</span>
+            <p>Modal content</p>
+        </div>
+    
+    </div>
+
+    <button id="myBtn-2">Open Modal</button>
+    
+    <div id="myModal-2" class="modal">
+    
+        <div class="modal-content-2">
+            <span id="close-2" class="close">Close</span>
+            <p>Modal content</p>
+        </div>
+    
+    </div>
+
+    <button id="myBtn-3">Open Modal</button>
+    
+    <div id="myModal-3" class="modal">
+    
+        <div class="modal-content-3">
+            <span id="close-3" class="close">Close</span>
+            <p>Modal content</p>
+        </div>
+    
+    </div>
+
     </header>
 
     <form>
@@ -55,9 +90,86 @@
 
     <script>
 
-        // hide spinner by default
-        d3.select("#spinner").attr("style", "display: none");
-            
+        // Get the modal
+            var modal1 = document.getElementById("myModal-1");
+
+            // Get the button that opens the modal
+            var btn1 = document.getElementById("myBtn-1");
+
+            // Get the <span> element that closes the modal
+            var span1 = document.getElementById("close-1");
+            debugger
+
+            // When the user clicks on the button, open the modal
+            btn1.onclick = function () {
+                modal1.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            span1.onclick = function () {
+                modal1.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal1) {
+                    modal1.style.display = "none";
+                }
+            }
+
+        // Get the modal
+            var modal2 = document.getElementById("myModal-2");
+
+            // Get the button that opens the modal
+            var btn2 = document.getElementById("myBtn-2");
+
+            // Get the <span> element that closes the modal
+            var span2 = document.getElementById("close-2");
+
+            // When the user clicks on the button, open the modal
+            btn2.onclick = function () {
+                modal2.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            span2.onclick = function () {
+                modal2.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal2) {
+                    modal2.style.display = "none";
+                }
+            }
+
+        // Get the modal
+            var modal3 = document.getElementById("myModal-3");
+
+            // Get the button that opens the modal
+            var btn3 = document.getElementById("myBtn-3");
+
+            // Get the <span> element that closes the modal
+            var span3 = document.getElementById("close-3");
+
+            // When the user clicks on the button, open the modal
+            btn3.onclick = function () {
+                modal3.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            span3.onclick = function () {
+                modal3.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal3) {
+                    modal3.style.display = "none";
+                }
+            }
+
+        //update crashes function
         updateCrashes = () => {
 
            // format user input for API call
@@ -112,15 +224,25 @@
                 //create data array for barchart
                 let contributingFactorsArray = [];
 
-                for (const factor in contributingFactorsForBarchart) {
-                    contributingFactorsArray.push([factor, contributingFactorsForBarchart[factor]]);
-                }
+                const contributingFactorsKeys = Object.keys(contributingFactorsForBarchart);
+                const contributingFactorsValues = Object.values(contributingFactorsForBarchart);
+                const contributingFactorsLength = contributingFactorsKeys.length;
 
-                contributingFactorsArray.sort((a, b) => {
-                    return b[1] - a[1];
-                });
+                for (let i = 0; i < contributingFactorsLength; i++) {
+                    const key = contributingFactorsKeys[i];
+                    const value = contributingFactorsValues[i];
+                    const factor = {
+                        name: key,
+                        value: value
+                    }
+                    contributingFactorsArray.push(factor);
+                }
                 
-                contributingFactorsArray[0][0] === 'Unspecified' ? contributingFactorsArray = contributingFactorsArray.slice(1, 6) : contributingFactorsArray = contributingFactorsArray.slice(0, 5);
+                contributingFactorsArray = contributingFactorsArray.sort((a, b) => {
+                    return b.value - a.value
+                })
+
+                contributingFactorsArray[0].name === 'Unspecified' ? contributingFactorsArray = contributingFactorsArray.slice(1, 6) : contributingFactorsArray = contributingFactorsArray.slice(0, 5);
 
                 // hide spinner when api call ends
                 d3.select("#spinner").attr("style", "display: none");
@@ -134,78 +256,60 @@
                 numCrashes === 0 ? numCrashes = "Zero" : numCrashes
 
                 // replace 'zero' in header with number of crashes
-                d3.select("h1").html(`Vision ${numCrashes}`)
-
-//----------------------------------------------------------------------------//
+                // d3.select("h1").html(`Vision ${numCrashes}`)
 
                 //draw barchart
-
-                const widthFinder = (contributingFactorNum) => {
-                    const largestContributingFactorNum = contributingFactorsArray[0][1];
-                    const percentage = contributingFactorNum / largestContributingFactorNum;
-                    return barchartWidth * percentage;
-                }
-
-                const barchartWidth = 500;
-                const barchartHeight = 500;
-
-                const barchartSvg = d3.select("#barchart")
-                   .append("svg")
-                   .attr("width", barchartWidth)
-                   .attr("height", barchartHeight);
-
-                const barHeight = 25;
-
-                const xScale = d3.scaleLinear()
-                    .domain([contributingFactorsArray.slice(-1)[0][1], contributingFactorsArray[0][1]])
-                    .range([0, barchartWidth]);
+                const x = d3.scaleLinear()
+                   .domain([0, d3.max(contributingFactorsArray, d => d.value)])
+                   .range([margin.left, barchartWidth - margin.right]);
                 
-                const xAxis = d3.axisBottom()
-                    .scale(xScale)
+                const y = d3.scaleBand()
+                   .domain(d3.range(contributingFactorsArray.length))
+                   .rangeRound([margin.top, barchartHeight - margin.bottom])
+                   .padding(0.1);
 
-                console.log(contributingFactorsArray);
+                const format = x.tickFormat(20, contributingFactorsArray.format);
 
-                const yScale = d3.scaleBand()
-                    .domain([contributingFactorsArray[0][0],
-                            contributingFactorsArray[1][0],
-                            contributingFactorsArray[2][0],
-                            contributingFactorsArray[3][0],
-                            contributingFactorsArray[4][0]
-                            ])
-                    .range([0, barchartHeight]);
+                const xAxis = g => g
+                   .attr("transform", `translate(0,${margin.top})`)
+                   .call(d3.axisTop(x).ticks(barchartWidth / 80, contributingFactorsArray.format))
+                   .call(g => g.select(".domain").remove());
+
+                const yAxis = g => g
+                   .attr("transform", `translate(${margin.left},0)`)
+                   .call(d3.axisLeft(y).tickFormat(i => contributingFactorsArray[i].name).tickSizeOuter(0));
                 
-                const yAxis = d3.axisLeft()
-                    .scale(yScale);
-
-                const bars = barchartSvg.selectAll("g")
+                barchartGroup.selectAll("g")
+                    .remove("g")
+                
+                barchartGroup.append("g")
+                    .attr("fill", "#ff71ce")
+                    .selectAll("rect")
                     .data(contributingFactorsArray)
-                    .join("g")
+                    .join("rect")
+                    .attr("x", x(0))
+                    .attr("y", (d, i) => y(i))
+                    .attr("width", d => x(d.value) - x(0))
+                    .attr("height", y.bandwidth());
+                
+                barchartGroup.append("g")
+                    .attr("fill", "white")
+                    .attr("text-anchor", "end")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", 12)
+                    .selectAll("text")
+                    .data(contributingFactorsArray)
+                    .join("text")
+                    .attr("x", d => x(d.value) - 4)
+                    .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
+                    .attr("dy", "0.35em")
+                    .text(d => format(d.value));
 
-                bars.append("g")
+                barchartGroup.append("g")
                     .call(xAxis);
-                
-                bars.append("g")
+
+                barchartGroup.append("g")
                     .call(yAxis);
-
-                bars.append("rect")
-                    .attr("fill", "steelblue")
-                    .attr("width", d => {
-                        return widthFinder(d[1]);
-                    })
-                    .attr("height", barHeight)
-                    .attr("y", (d, i) => {
-                        return (i * 30) + barHeight;
-                    })   
-
-                bars.append("text")
-                    .attr("fill", "black")
-                    .attr("x", 0)
-                    .attr("y", (d, i) => {
-                        return (i * 30) + barHeight;
-                    })
-                    .text(d => d[0])   
-                
-//----------------------------------------------------------------------------//
 
                 // draw crashes
                 mapGroup.selectAll("path.crash")
@@ -293,11 +397,24 @@
             })
         }
 
+        //set barchart dimensions
+        const margin = ({ top: 30, right: 0, bottom: 10, left: 200 })
+        const barchartWidth = 500;
+        const barchartHeight = 250;
+
+        //create barchart svg
+        const barchartSvg = d3.select("#barchart")
+            .append("svg")
+            .attr("width", barchartWidth)
+            .attr("height", barchartHeight)
+        
+        const barchartGroup = barchartSvg.append("g");
+
         // set map dimensions
         const mapWidth = 750;
         const mapHeight = 750;
 
-        // create map element
+        // create map svg
         const mapSvg = d3.select("#map")
             .append("svg")
             .attr("width", mapWidth)
