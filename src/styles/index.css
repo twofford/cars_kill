@@ -123,6 +123,14 @@ svg {
     justify-content: space-around;
 }
 
+#contact {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
 .a:visited {
     text-decoration: none;
     color: black;
