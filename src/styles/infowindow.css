@@ -1,0 +1,10 @@
+#infowindow {
+    position: absolute;
+    display: none;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: rgba(245, 245, 245, .9);
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none;
+}

@@ -1,0 +1,9 @@
+.crash {
+    fill: gray;
+    stroke: black;
+}
+
+.crash:hover {
+    fill: red;
+    stroke: gray;
+}

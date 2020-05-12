@@ -1,0 +1,26 @@
+#barchart{
+    display: none;
+    position: fixed;
+    left: 15%;
+    max-width: 500px;
+}
+
+#barchart text {
+    font-size: 14px;
+}
+
+.date-display {
+    display: inline-block;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.asterisk {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.date-display > span {
+    font-size: 20px;
+}
