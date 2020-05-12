@@ -58,7 +58,6 @@
                 <span id="close-2" class="close">&times;</span>
                 <br>
                 <span>Choose a date in the box below and click the button marked "Show collisions." Collisions from that day will be marked on the map. Hover over a collision for more details about it. The chart to the left shows the leading causes of collisions that day. </span>
-                <!--Put a gif here-->
             </div>
         
         </div>
@@ -83,7 +82,18 @@
     </header>
 
     <form>
-        <input id="crash-date-input" type="date" placeholder="Choose a date"></input>
+        <label>Choose a date: <input type="date" id="crash-date-input"></input></label>
+        <br>
+        <label>Choose a borough: <select id="borough-dropdown">
+            <option value="AND (borough='BRONX' OR borough='BROOKLYN' OR borough='MANHATTAN' OR borough='QUEENS' OR borough='STATEN ISLAND')">All boroughs</option>
+            <option value="AND borough='BRONX'">Bronx</option>
+            <option value="AND borough='BROOKLYN'">Brooklyn</option>
+            <option value="AND borough='MANHATTAN'">Manhattan</option>
+            <option value="AND borough='QUEENS'">Queens</option>
+            <option value="AND borough='STATEN ISLAND'">Staten Island</option>
+        </select></label>
+        <br>
+        <input type="checkbox" id="crash-injury-death-toggle">Only show collisions where someone was injured or killed</input>
         <br>
         <button type="button" class="btn" onclick="updateCrashes()">Show collisions</button>
     </form>
@@ -95,11 +105,12 @@
         <p id="vehicles-involved"></p>
         <p id="contributing-factors"></p>
     </div>
-
     
     <div id="map">
         <div id="barchart">
-            <div class="date-display">Leading causes of death/injury</div>
+            <div class="date-display">Leading causes of death/injury*</div>
+            <br>
+            <div class="asterisk">*Not including 'Unspecified'</div>
         </div>
     </div>
 
@@ -109,343 +120,9 @@
         <a href="https://github.com/twofford" target="_blank"><i class="fab fa-github"></i></a>
     </div>
 
-    <script>
-
-        //modal toggling
-
-            const modal1 = document.getElementById("modal-1");
-
-            const btn1 = document.getElementById("modal-btn-1");
-
-            const span1 = document.getElementById("close-1");
-
-            btn1.onclick = function () {
-                modal1.style.display = "block";
-            }
-
-            span1.onclick = function () {
-                modal1.style.display = "none";
-            }
-
-            window.onclick = function (event) {
-                if (event.target == modal1) {
-                    modal1.style.display = "none";
-                }
-            }
-
-            const modal2 = document.getElementById("modal-2");
-
-            const btn2 = document.getElementById("modal-btn-2");
-
-            const span2 = document.getElementById("close-2");
-
-            btn2.onclick = function () {
-                modal2.style.display = "block";
-            }
-
-            span2.onclick = function () {
-                modal2.style.display = "none";
-            }
-
-            window.onclick = function (event) {
-                if (event.target == modal2) {
-                    modal2.style.display = "none";
-                }
-            }
-
-            const modal3 = document.getElementById("modal-3");
-
-            const btn3 = document.getElementById("modal-btn-3");
-
-            const span3 = document.getElementById("close-3");
-
-            btn3.onclick = function () {
-                modal3.style.display = "block";
-            }
-
-            span3.onclick = function () {
-                modal3.style.display = "none";
-            }
-
-            window.onclick = function (event) {
-                if (event.target == modal3) {
-                    modal3.style.display = "none";
-                }
-            }
-
-        //update crashes function
-        updateCrashes = () => {
-
-           // format user input for API call
-           let crashDate = document.getElementById("crash-date-input").value;
-           const displayDate = new Date(crashDate).toDateString();
-           crashDate = new Date(crashDate).toISOString();
-           crashDate = crashDate.slice(0, crashDate.length - 1);
-           crashDate = `crash_date="${crashDate}"`;
-           
-           // show spinner when api call begins
-           d3.select("#spinner").attr("style", "display: block");
-
-           // api call
-           $.ajax({
-               url: "https://data.cityofnewyork.us/resource/h9gi-nx95.geojson",
-               type: "GET",
-               data: {
-                   "$$app_token": "GeazDF3xhBoHQv3NWt30dElQb",
-                   "$limit": 5000,
-                   "$where": `${crashDate}`
-               }
-           }).done(res => {
-
-                // create data object for barchart
-                let contributingFactorsForBarchart = {};
-
-                for (let index = 0; index < res.features.length; index++) {
-
-                    const crash = res.features[index];
-
-                    if (crash.properties.contributing_factor_vehicle_1) {
-                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] = 1;
-                    };
-
-                    if (crash.properties.contributing_factor_vehicle_2) {
-                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_2] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_2] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_2] = 1;
-                    };
-
-                    if (crash.properties.contributing_factor_vehicle_3) {
-                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_3] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_3] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_3] = 1;
-                    };
-
-                    if (crash.properties.contributing_factor_vehicle_4) {
-                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_4] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_4] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_4] = 1;
-                    };
-
-                    if (crash.properties.contributing_factor_vehicle_5) {
-                        contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_5] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_5] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_5] = 1;
-                    };
-                    
-                }
-
-                //create data array for barchart
-                let contributingFactorsArray = [];
-
-                const contributingFactorsKeys = Object.keys(contributingFactorsForBarchart);
-                const contributingFactorsValues = Object.values(contributingFactorsForBarchart);
-                const contributingFactorsLength = contributingFactorsKeys.length;
-
-                for (let i = 0; i < contributingFactorsLength; i++) {
-                    const key = contributingFactorsKeys[i];
-                    const value = contributingFactorsValues[i];
-                    const factor = {
-                        name: key,
-                        value: value
-                    }
-                    contributingFactorsArray.push(factor);
-                }
-                
-                contributingFactorsArray = contributingFactorsArray.sort((a, b) => {
-                    return b.value - a.value
-                })
-
-                contributingFactorsArray[0].name === 'Unspecified' ? contributingFactorsArray = contributingFactorsArray.slice(1, 6) : contributingFactorsArray = contributingFactorsArray.slice(0, 5);
-
-                // hide spinner when api call ends
-                d3.select("#spinner").attr("style", "display: none");
-
-                // create window for tooltips
-                const infoWindow = d3.select("#infowindow")
-
-                // find number of crashes
-                let numCrashes = res.features.length;
-
-                //draw barchart
-
-                d3.select("#barchart")
-                    .style("display", "block")
-
-                const x = d3.scaleLinear()
-                   .domain([0, d3.max(contributingFactorsArray, d => d.value)])
-                   .range([margin.left, barchartWidth - margin.right]);
-                
-                const y = d3.scaleBand()
-                   .domain(d3.range(contributingFactorsArray.length))
-                   .rangeRound([margin.top, barchartHeight - margin.bottom])
-                   .padding(0.1);
-
-                const format = x.tickFormat(20, contributingFactorsArray.format);
-
-                const xAxis = g => g
-                   .attr("transform", `translate(0,${margin.top})`)
-                   .call(d3.axisTop(x).ticks(barchartWidth / 80, contributingFactorsArray.format))
-                   .call(g => g.select(".domain").remove());
-
-                const yAxis = g => g
-                   .attr("transform", `translate(${margin.left},0)`)
-                   .call(d3.axisLeft(y).tickFormat(i => contributingFactorsArray[i].name).tickSizeOuter(0));
-                
-                barchartGroup.selectAll("g")
-                    .remove("g")
-                
-                barchartGroup.append("g")
-                    .attr("fill", "red")
-                    .selectAll("rect")
-                    .data(contributingFactorsArray)
-                    .join("rect")
-                    .attr("x", x(0))
-                    .attr("y", (d, i) => y(i))
-                    .attr("width", d => x(d.value) - x(0))
-                    .attr("height", y.bandwidth());
-                
-                barchartGroup.append("g")
-                    .attr("fill", "white")
-                    .attr("text-anchor", "end")
-                    .attr("font-family", "sans-serif")
-                    .attr("font-size", 12)
-                    .selectAll("text")
-                    .data(contributingFactorsArray)
-                    .join("text")
-                    .attr("x", d => x(d.value) - 4)
-                    .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
-                    .attr("dy", "0.35em")
-                    .text(d => format(d.value));
-
-                barchartGroup.append("g")
-                    .call(xAxis);
-
-                barchartGroup.append("g")
-                    .call(yAxis);
-
-                d3.select("#date-display").html(displayDate);
-
-                // draw crashes
-                mapGroup.selectAll("path.crash")
-                    .remove("path")
-                    .data(res.features)
-                    .enter()
-                    .append("path")
-                    .attr("d", path)
-                    .attr("class", "crash")
-                    .on("mouseover", function (d) {
-                       
-                       // format crash time
-                       const crashTime = d.properties.crash_time.split(":")
-                       const amPm = crashTime[0] >= 12 ? "AM" : "PM";
-                       let crashHours = crashTime[0];
-                       let crashMinutes = crashTime[1];
-                       crashHours = crashHours % 12;
-                       crashHours = crashHours ? crashHours : 12;
-                       const crashTimeString = crashHours + ":" + crashMinutes + " " + amPm;
-                       
-                       // format contributing factors
-                       let contributingFactors = [];
-                       if (d.properties.contributing_factor_vehicle_1 && d.properties.contributing_factor_vehicle_1 != "Unspecified") {
-                           contributingFactors.push(d.properties.contributing_factor_vehicle_1);
-                        }
-                        if (d.properties.contributing_factor_vehicle_2 && d.properties.contributing_factor_vehicle_2 != "Unspecified") {
-                            contributingFactors.push(d.properties.contributing_factor_vehicle_2);
-                        }
-                        if (d.properties.contributing_factor_vehicle_3 && d.properties.contributing_factor_vehicle_3 != "Unspecified") {
-                            contributingFactors.push(d.properties.contributing_factor_vehicle_3);
-                        }
-                        if (d.properties.contributing_factor_vehicle_4 && d.properties.contributing_factor_vehicle_4 != "Unspecified") {
-                            contributingFactors.push(d.properties.contributing_factor_vehicle_4);
-                        }
-                        if (d.properties.contributing_factor_vehicle_5 && d.properties.contributing_factor_vehicle_5 != "Unspecified") {
-                            contributingFactors.push(d.properties.contributing_factor_vehicle_5);
-                        }
-                        if (contributingFactors.length === 0) {
-                            contributingFactors.push("Unspecified")
-                        }
-                        let uniqueFactors = [...new Set(contributingFactors)];
-                        uniqueFactors = uniqueFactors.join(", ");
-                        
-                        // format vehicles involved
-                        let vehiclesInvolved = 0;
-                        if (d.properties.contributing_factor_vehicle_1) {
-                            vehiclesInvolved += 1;
-                        }
-                        if (d.properties.contributing_factor_vehicle_2) {
-                            vehiclesInvolved += 1;
-                        }
-                        if (d.properties.contributing_factor_vehicle_3) {
-                            vehiclesInvolved += 1;
-                        }
-                        if (d.properties.contributing_factor_vehicle_4) {
-                            vehiclesInvolved += 1;
-                        }
-                        if (d.properties.contributing_factor_vehicle_5) {
-                            vehiclesInvolved += 1;
-                        }
-                        
-                        // show infowindow
-                        infoWindow.transition()
-                            .duration(200)
-                            .style("display", "block")
-                            .style("left", (d3.event.pageX + 10) + "px")
-                            .style("top", (d3.event.pageY + 10) + "px");
-                        
-                        // display crash data
-                        d3.select("#time").html(`Time: ${crashTimeString}</i>`)
-                        d3.select("#injuries").html(`Injuries: ${d.properties.number_of_persons_injured}</i>`)
-                        d3.select("#deaths").html(`Deaths: ${d.properties.number_of_persons_killed}</i>`);
-                        d3.select("#vehicles-involved").text(`Vehicles Involved: ${vehiclesInvolved}`);
-                        d3.select("#contributing-factors").text(`Contributing Factors: ${uniqueFactors}`);
-                        d3.select(this).attr("class", "crash hover");
-                    })
-
-                    .on("mouseout", function (d) {
-
-                        // hide infowindow
-                        infoWindow.transition()
-                            .duration(200)
-                            .style("display", "none");
-                    })
-            })
-        }
-
-        //set barchart dimensions
-        const margin = ({ top: 30, right: 0, bottom: 10, left: 200 })
-        const barchartWidth = 500;
-        const barchartHeight = 250;
-
-        //create barchart svg
-        const barchartSvg = d3.select("#barchart")
-            .append("svg")
-            .attr("width", barchartWidth)
-            .attr("height", barchartHeight)
-        
-        const barchartGroup = barchartSvg.append("g");
-
-        // set map dimensions
-        const mapWidth = 750;
-        const mapHeight = 750;
-
-        // create map svg
-        const mapSvg = d3.select("#map")
-            .append("svg")
-            .attr("width", mapWidth)
-            .attr("height", mapHeight);
-
-        const mapGroup = mapSvg.append("g");
-
-        const projection = d3.geoAlbers()
-            .scale(100000)
-            .rotate([73.9, 0])
-            .center([0, 40.775])
-        
-        const path = d3.geoPath()
-            .projection(projection);
-
-        // draw map
-        mapGroup.selectAll("path")
-            .data(nyc.features)
-            .enter()
-            .append("path")
-            .attr("fill", "white")
-            .attr("stroke", "black")
-            .attr("d", path)
-
-    </script>
+    <script src="src/scripts/toggle_modals.js"></script>
+    <script src="src/scripts/update_crashes.js"></script>
+    <script src="src/scripts/create_svgs.js"></script>
 
 </body>
 

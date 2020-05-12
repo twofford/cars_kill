@@ -25,7 +25,7 @@ h1 {
 form {
     text-align: center;
     margin-top: 10px;
-    margin-bottom: 80px;
+    margin-bottom: 60px;
 }
 
 .btn {
@@ -58,6 +58,12 @@ svg {
 .date-display {
     display: inline-block;
     font-size: 20px;
+    font-weight: bold;
+}
+
+.asterisk {
+    display: inline-block;
+    font-size: 14px;
     font-weight: bold;
 }
 
