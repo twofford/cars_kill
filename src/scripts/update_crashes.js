@@ -10,12 +10,6 @@ updateCrashes = () => {
     crashDate = crashDate.slice(0, crashDate.length - 1);
     crashDate = `crash_date="${crashDate}"`;
 
-    // format user injury/death input for API call
-
-    let injuriesOrDeaths;
-
-    document.getElementById("crash-injury-death-toggle").checked ? injuriesOrDeaths = "AND (number_of_persons_injured > 0 OR number_of_persons_killed > 0)" : injuriesOrDeaths = "";
-
     // show spinner when api call begins
     d3.select("#spinner").attr("style", "display: block");
 
@@ -26,7 +20,7 @@ updateCrashes = () => {
         data: {
             "$$app_token": "GeazDF3xhBoHQv3NWt30dElQb",
             "$limit": 5000,
-            "$where": `${crashDate}` + injuriesOrDeaths + boroughChoice
+            "$where": `${crashDate}` + "AND (number_of_persons_injured > 0 OR number_of_persons_killed > 0)" + boroughChoice
         }
     }).done(res => {
 

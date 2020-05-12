@@ -82,20 +82,35 @@
     </header>
 
     <form>
-        <label>Choose a date: <input type="date" id="crash-date-input"></input></label>
-        <br>
-        <label>Choose a borough: <select id="borough-dropdown">
-            <option value="AND (borough='BRONX' OR borough='BROOKLYN' OR borough='MANHATTAN' OR borough='QUEENS' OR borough='STATEN ISLAND')">All boroughs</option>
-            <option value="AND borough='BRONX'">Bronx</option>
-            <option value="AND borough='BROOKLYN'">Brooklyn</option>
-            <option value="AND borough='MANHATTAN'">Manhattan</option>
-            <option value="AND borough='QUEENS'">Queens</option>
-            <option value="AND borough='STATEN ISLAND'">Staten Island</option>
-        </select></label>
-        <br>
-        <input type="checkbox" id="crash-injury-death-toggle">Only show collisions where someone was injured or killed</input>
-        <br>
+
+        <div class="form-wrapper">
+
+            <label>Date: </label>
+            <input type="date" id="crash-date-input"></input>
+
+            <label>Borough: </label>
+            <select id="borough-dropdown">
+            
+                <option
+                    value="AND (borough='BRONX' OR borough='BROOKLYN' OR borough='MANHATTAN' OR borough='QUEENS' OR borough='STATEN ISLAND')">
+                    All boroughs</option>
+            
+                <option value="AND borough='BRONX'">Bronx</option>
+            
+                <option value="AND borough='BROOKLYN'">Brooklyn</option>
+            
+                <option value="AND borough='MANHATTAN'">Manhattan</option>
+            
+                <option value="AND borough='QUEENS'">Queens</option>
+            
+                <option value="AND borough='STATEN ISLAND'">Staten Island</option>
+            
+            </select>
+
+        </div>
+        
         <button type="button" class="btn" onclick="updateCrashes()">Show collisions</button>
+    
     </form>
 
     <div id="infowindow">
