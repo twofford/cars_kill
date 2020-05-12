@@ -57,7 +57,7 @@
             <div class="modal-content">
                 <span id="close-2" class="close">&times;</span>
                 <br>
-                <span>Choose a date in the box below and click the button marked "Show collisions." Collisions from that day will be marked on the map. Hover over a collision for more details about it. The chart to the left shows the leading causes of collisions that day. </span>
+                <span>Choose a date and borough from the boxes below and click the button marked "show collisions." Collisions from that day will be marked on the map. Hover over a collision for more details about it. The chart to the left shows the leading causes of collisions that day. </span>
             </div>
         
         </div>
@@ -85,11 +85,13 @@
 
         <div class="form-wrapper">
 
-            <label>Date: </label>
-            <input type="date" id="crash-date-input"></input>
+            <input id="crash-date-input" onfocus="(this.type='date')" placeholder="Select date">
 
-            <label>Borough: </label>
-            <select id="borough-dropdown">
+            <!-- <input type="date" id="crash-date-input"></input> -->
+
+            <select id="borough-dropdown" placeholder="Select borough">
+
+                <option value="" disabled selected>Select borough</option>
             
                 <option
                     value="AND (borough='BRONX' OR borough='BROOKLYN' OR borough='MANHATTAN' OR borough='QUEENS' OR borough='STATEN ISLAND')">
