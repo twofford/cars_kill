@@ -1,6 +1,6 @@
 #barchart{
     display: none;
-    position: fixed;
+    position: absolute;
     left: 15%;
     max-width: 500px;
 }
@@ -23,4 +23,10 @@
 
 .date-display > span {
     font-size: 20px;
+}
+
+.btn {
+    font-size: 12px;
+    margin-left: 5px;
+    border-radius: 5px;
 }
