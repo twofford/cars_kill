@@ -42,7 +42,7 @@ svg {
 }
 
 #contact {
-    position: absolute;
+    position: fixed;
     right: 5px;
     bottom: 5px;
     display: flex;

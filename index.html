@@ -77,6 +77,17 @@
             </div>
         
         </div>
+
+        <div id="modal-4" class="modal">
+        
+            <div id="no-data" class="modal-content">
+                <span id="close-4" class="close">&times;</span>
+                <br>
+                <span>There were no collisions for that date/borough combination. Try another date/borough combination.</span>
+            </div>
+        
+        </div>
+
     </div>
 
     </header>
@@ -85,7 +96,7 @@
 
         <div class="form-wrapper">
 
-            <input id="crash-date-input" onfocus="(this.type='date')" placeholder="Select date">
+            <input id="crash-date-input" onfocus="this.type='date'" placeholder="Select date" value="">
 
             <select id="borough-dropdown" placeholder="Select borough">
 
@@ -135,6 +146,7 @@
         <a href="https://github.com/twofford" target="_blank"><i class="fab fa-github"></i></a>
     </div>
 
+    
     <script src="src/scripts/toggle_modals.js"></script>
     <script src="src/scripts/update_crashes.js"></script>
     <script src="src/scripts/create_svgs.js"></script>
