@@ -39,6 +39,10 @@
   },
   "dependencies": {
     "d3": "^5.16.0",
+    "d3-axis": "^1.0.12",
+    "d3-geo": "^1.12.1",
+    "d3-scale": "^3.2.1",
+    "d3-selection": "^1.4.1",
     "leaflet": "^1.6.0",
     "micromodal": "^0.4.6"
   }
