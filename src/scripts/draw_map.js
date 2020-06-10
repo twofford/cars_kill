@@ -23,4 +23,6 @@ $.getJSON("src/data/nyc.json", (data) => {
         .attr("fill", "white")
         .attr("stroke", "black")
         .attr("d", path)
+
+        d3.select("#spinner").attr("style", "display: none");
 })
