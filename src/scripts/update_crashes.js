@@ -107,22 +107,22 @@ updateCrashes = () => {
 
             const x = d3.scaleLinear()
                 .domain([0, d3.max(contributingFactorsArray, d => d.value)])
-                .range([margin.left, barchartWidth - margin.right]);
+                .range([200, 500]);
 
             const y = d3.scaleBand()
                 .domain(d3.range(contributingFactorsArray.length))
-                .rangeRound([margin.top, barchartHeight - margin.bottom])
+                .rangeRound([30, 240])
                 .padding(0.1);
 
             const format = x.tickFormat(20, contributingFactorsArray.format);
 
             const xAxis = g => g
-                .attr("transform", `translate(0,${margin.top})`)
-                .call(d3.axisTop(x).ticks(barchartWidth / 80, contributingFactorsArray.format))
+                .attr("transform", "translate(0,30)")
+                .call(d3.axisTop(x).ticks(500 / 80, contributingFactorsArray.format))
                 .call(g => g.select(".domain").remove());
 
             const yAxis = g => g
-                .attr("transform", `translate(${margin.left},0)`)
+                .attr("transform", "translate(200,0)")
                 .call(d3.axisLeft(y).tickFormat(i => contributingFactorsArray[i].name).tickSizeOuter(0));
 
             barchartGroup.selectAll("g")
@@ -249,14 +249,10 @@ updateCrashes = () => {
         } else {
             const modal4 = document.getElementById("modal-4");
 
-            // const btn2 = document.getElementById("modal-btn-2");
-
             const span4 = document.getElementById("close-4");
 
-            
             modal4.style.display = "block";
             
-
             span4.onclick = function () {
                 modal4.style.display = "none";
             }
