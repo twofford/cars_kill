@@ -15,14 +15,16 @@ const path = d3.geoPath()
     .projection(projection);
 
 // get nyc json, then draw map
-$.getJSON("src/data/nyc.json", (data) => {
-    mapGroup.selectAll("path")
-        .data(data.features)
-        .enter()
-        .append("path")
-        .attr("fill", "white")
-        .attr("stroke", "black")
-        .attr("d", path)
+fetch("src/data/nyc.json")
+    .then(res => res.json())
+    .then(data => {
+        mapGroup.selectAll("path")
+            .data(data.features)
+            .enter()
+            .append("path")
+            .attr("fill", "white")
+            .attr("stroke", "black")
+            .attr("d", path)
 
         d3.select("#spinner").attr("style", "display: none");
-})
+    });

@@ -25,16 +25,18 @@ updateCrashes = () => {
     d3.select("#spinner").attr("style", "display: block");
 
     // api call
-    $.ajax({
-        url: "https://data.cityofnewyork.us/resource/h9gi-nx95.geojson",
-        type: "GET",
-        data: {
-            "$$app_token": "GeazDF3xhBoHQv3NWt30dElQb",
-            "$limit": 5000,
-            "$where": `${crashDate}` + "AND (number_of_persons_injured > 0 OR number_of_persons_killed > 0)" + boroughChoice
-        }
-    }).done(res => {
+    const apiEndpoint = new URL("https://data.cityofnewyork.us/resource/h9gi-nx95.geojson")
 
+    const params = {
+                    $$app_token: "GeazDF3xhBoHQv3NWt30dElQb",
+                    $limit: 5000,
+                    $where: crashDate + "AND (number_of_persons_injured > 0 OR number_of_persons_killed > 0)" + boroughChoice
+                    }
+
+    Object.keys(params).forEach(key => apiEndpoint.searchParams.append(key, params[key]));
+
+    fetch(apiEndpoint).then(res => res.json()).then(res => {
+        
         // hide spinner when api call ends
         d3.select("#spinner").attr("style", "display: none");
 
