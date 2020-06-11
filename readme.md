@@ -1,3 +1,1 @@
-# Cars Kill
-
-![Cars Kill in action] (src/images/cars_kill_hero.png)
+![cars kill in action] (src/images/cars_kill_hero.png)
