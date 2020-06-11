@@ -6,11 +6,9 @@ updateCrashes = () => {
     // format user date input for API call
     let crashDate = document.getElementById("crash-date-input").value;
     const today = new Date();
-    const todayYear = today.getFullYear();
     let todayMonth = today.getMonth();
     todayMonth < 10 ? todayMonth = "0" + todayMonth : todayMonth;
-    const todayDate = today.getDate();
-    const todayFullDate = todayYear + "-" + todayMonth + "-" + todayDate;
+    const todayFullDate = today.getFullYear() + "-" + todayMonth + "-" + today.getDate();
     
     if (!crashDate) {
         crashDate = todayFullDate;
