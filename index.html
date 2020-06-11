@@ -8,8 +8,6 @@
 
     <link rel="stylesheet" href="src/styles/all.css" media="print" onload="this.media='all'">
 
-    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
-
     <script async src="https://kit.fontawesome.com/7543c6b46d.js" crossorigin="anonymous"></script>
 
 </head>
@@ -83,7 +81,7 @@
 
     </header>
 
-    <form>
+    <form id="form">
 
         <div class="form-wrapper">
 
@@ -91,21 +89,22 @@
 
             <select id="borough-dropdown" placeholder="Select borough">
 
-                <option value="" disabled selected>Select borough</option>
+                <option id="select-borough-default" value="" disabled selected>Select borough</option>
             
-                <option
+                <option id="all-boroughs"
                     value="AND (borough='BRONX' OR borough='BROOKLYN' OR borough='MANHATTAN' OR borough='QUEENS' OR borough='STATEN ISLAND')">
-                    All boroughs</option>
+                    All boroughs
+                </option>
             
-                <option value="AND borough='BRONX'">Bronx</option>
+                <option id="bronx" value="AND borough='BRONX'">Bronx</option>
             
-                <option value="AND borough='BROOKLYN'">Brooklyn</option>
+                <option id="brooklyn" value="AND borough='BROOKLYN'">Brooklyn</option>
             
-                <option value="AND borough='MANHATTAN'">Manhattan</option>
+                <option id="manhattan" value="AND borough='MANHATTAN'">Manhattan</option>
             
-                <option value="AND borough='QUEENS'">Queens</option>
+                <option id="queens" value="AND borough='QUEENS'">Queens</option>
             
-                <option value="AND borough='STATEN ISLAND'">Staten Island</option>
+                <option id="staten" value="AND borough='STATEN ISLAND'">Staten Island</option>
             
             </select>
 

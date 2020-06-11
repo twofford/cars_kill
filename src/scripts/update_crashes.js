@@ -40,17 +40,22 @@ updateCrashes = () => {
         // hide spinner when api call ends
         d3.select("#spinner").attr("style", "display: none");
 
+        const resLength = res.features.length;
+
         //if the call returns crashes
-        if (res.features.length > 0) {
+        if (resLength > 0) {
 
             // create data object for barchart
             let contributingFactorsForBarchart = {};
 
-            for (let index = 0; index < res.features.length; index++) {
+            for (let index = 0; index < resLength; index++) {
 
                 const crash = res.features[index];
 
-                if (crash.properties.contributing_factor_vehicle_1) {
+                if (crash.properties.contributing_factor_vehicle_1) { // if there's a contributing factor for vehicle 1 in the response
+                //check if that contributing factor already exists as a key in the contributing factors hash
+                //if it does, increment its value; if it doesn't, set its value to 1.
+                //dry this code up
                     contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] ? contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] += 1 : contributingFactorsForBarchart[crash.properties.contributing_factor_vehicle_1] = 1;
                 };
 
@@ -99,7 +104,7 @@ updateCrashes = () => {
             const infoWindow = d3.select("#infowindow")
 
             // find number of crashes
-            let numCrashes = res.features.length;
+            let numCrashes = resLength;
 
             // draw barchart
             d3.select("#barchart")
