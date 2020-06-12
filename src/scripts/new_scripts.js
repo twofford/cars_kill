@@ -88,7 +88,24 @@ const createContributingFactorsObject = res => {
 }
 
 const showModal = () => {
-    //this code should display the modal for when the query returns empty
+
+    toggleSpinner();
+
+    const modal4 = document.getElementById("modal-4");
+
+    const span4 = document.getElementById("close-4");
+
+    modal4.style.display = "block";
+
+    span4.onclick = function () {
+        modal4.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal4) {
+            modal4.style.display = "none";
+        }
+    }
 }
 
 //takes in the contributing factors POJO and the JSON response, coverts it to an array, sorts it and calls draw
