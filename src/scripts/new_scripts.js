@@ -1,6 +1,8 @@
 //pulls user input from the page and invokes formatQueryString, passing in date and borough user input
 const getUserInput = () => {
 
+    toggleSpinner();
+
     const boroughChoice = document.getElementById("borough-dropdown").value;
     let crashDate = document.getElementById("crash-date-input").value;
     const today = new Date();
@@ -42,7 +44,7 @@ const formatQueryString = (crashDate, boroughChoice) => {
 const makeAPICall = queryString => {
 
     // show spinner when api call begins
-    d3.select("#spinner").attr("style", "display: block");
+    // d3.select("#spinner").attr("style", "display: block");
 
     fetch(queryString)
         .then(res => res.json())
@@ -278,5 +280,16 @@ const draw = (contributingFactorsArray, res) => {
     drawBarchart(contributingFactorsArray);
 
     drawCrashes(res);
+
+    toggleSpinner();
+
+}
+
+const toggleSpinner = () => {
+
+    const spinner = document.getElementById("spinner")
+    spinner.style.display === "block" ?
+    spinner.style.display = "none" :
+    spinner.style.display = "block";
 
 }
