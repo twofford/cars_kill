@@ -1,6 +1,8 @@
 //pulls user input from the page and invokes formatQueryString, passing in date and borough user input
 const getUserInput = () => {
 
+    toggleSpinner();
+
     const boroughChoice = document.getElementById("borough-dropdown").value;
     let crashDate = document.getElementById("crash-date-input").value;
     const today = new Date();
@@ -42,7 +44,7 @@ const formatQueryString = (crashDate, boroughChoice) => {
 const makeAPICall = queryString => {
 
     // show spinner when api call begins
-    d3.select("#spinner").attr("style", "display: block");
+    // d3.select("#spinner").attr("style", "display: block");
 
     fetch(queryString)
         .then(res => res.json())
@@ -86,7 +88,24 @@ const createContributingFactorsObject = res => {
 }
 
 const showModal = () => {
-    //this code should display the modal for when the query returns empty
+
+    toggleSpinner();
+
+    const modal4 = document.getElementById("modal-4");
+
+    const span4 = document.getElementById("close-4");
+
+    modal4.style.display = "block";
+
+    span4.onclick = function () {
+        modal4.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal4) {
+            modal4.style.display = "none";
+        }
+    }
 }
 
 //takes in the contributing factors POJO and the JSON response, coverts it to an array, sorts it and calls draw
@@ -278,5 +297,16 @@ const draw = (contributingFactorsArray, res) => {
     drawBarchart(contributingFactorsArray);
 
     drawCrashes(res);
+
+    toggleSpinner();
+
+}
+
+const toggleSpinner = () => {
+
+    const spinner = document.getElementById("spinner")
+    spinner.style.display === "block" ?
+    spinner.style.display = "none" :
+    spinner.style.display = "block";
 
 }
