@@ -140,7 +140,7 @@ const drawBarchart = contributingFactorsArray => {
         .style("display", "block")
 
     const x = d3.scaleLinear()
-        .domain([0, d3.max(contributingFactorsArray, d => d.value)])
+        .domain([0, d3.max(contributingFactorsArray, d => d.value + (d.value/10))])
         .range([200, 500]);
 
     const y = d3.scaleBand()
@@ -217,9 +217,9 @@ const drawCrashes = res => {
                 .style("top", (d3.event.pageY + 10) + "px");
 
             // display crash data
-            d3.select("#time").html(`Time: ${formatCrashTime(d.properties.crash_time)}</i>`)
-            d3.select("#injuries").html(`Injuries: ${d.properties.number_of_persons_injured}</i>`)
-            d3.select("#deaths").html(`Deaths: ${d.properties.number_of_persons_killed}</i>`);
+            d3.select("#time").html(`Time: ${formatCrashTime(d.properties.crash_time)}`)
+            d3.select("#injuries").html(`Injuries: ${d.properties.number_of_persons_injured}`)
+            d3.select("#deaths").html(`Deaths: ${d.properties.number_of_persons_killed}`);
             d3.select("#vehicles-involved").text(`Vehicles Involved: ${formatCrashVehicles(d.properties)}`);
             d3.select("#contributing-factors").text(`Contributing Factors: ${formatCrashFactors(d.properties)}`);
             d3.select(this).attr("class", "crash hover");
