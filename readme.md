@@ -1,5 +1,4 @@
 # Cars Kill
-![Cars Kill](https://i.imgur.com/X6LEvP1.png)
 
 ## Description
 
@@ -28,3 +27,20 @@ Cars Kill uses d3 to draw a neighbrood map of New York City. To do this, it reli
       });
   
 By using fetch, I shaved approximately 200 milliseconds off the time it takes to load the DOM. Nice! As you can see, I also use d3 to hide a spinner in the .then() callback. That spinner is the first thing that loads when the user's browser begins parsing the body, which means there's never any time when the user is staring at a blank page wondering what's supposed to be happening.
+
+### Separation of Concerns
+
+When a user clicks the Show Collisions button, 10 things happen:
+
+1. A spinner is displayed
+2. The user's input is grabbed off the page
+3. The user's input is formatted into a query string
+4. An API call is made with the query string
+5. The data returned from the API call is converted to an array so it can be sorted
+6. If the API call returns nothing, a modal is shown
+7. A bar chart is drawn
+8. Markers are drawn on the map
+9. For each crash, its time, contributing factors and number of vehicles involved are formatted to be user-friendly
+10. The spinner is hidden
+
+On my first pass, I wrote a single, 300-line function, `updateCrashes`, that performed all this work. Sub-optimal. When I refactored, I split the work into 12 smaller functions: `toggleSpinner`, `getUserInput`, `formatQueryString`, `makeAPICall`, `createContributingFactorsObject`, `createContributingFactorsArray`, `drawModal`, `drawBarchart`, `drawCrashes`, `formatCrashTime`, `formatCrashFactors`, `formatCrashVehicles` and the simply-named `draw`.
