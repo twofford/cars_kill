@@ -225,7 +225,7 @@ const drawCrashes = res => {
             d3.select(this).attr("class", "crash hover");
         })
 
-        .on("mouseout", function (d) {
+        .on("mouseout", () => {
 
             // hide infowindow
             infoWindow.transition()
@@ -262,7 +262,6 @@ const formatCrashFactors = factors => {
         }
     }
 
-    
     if (contributingFactors.length === 0) {
         contributingFactors.push("Unspecified")
     }
