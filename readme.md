@@ -44,4 +44,4 @@ When a user clicks the Show Collisions button, 10 things happen:
 9. For each crash, its time, contributing factors and number of vehicles involved are formatted to be user-friendly
 10. The spinner is hidden
 
-On my first pass, I wrote a single, 300-line function, `updateCrashes`, that performed all this work. Sub-optimal. When I refactored, I split the work into 12 smaller functions: `toggleSpinner`, `getUserInput`, `formatQueryString`, `makeAPICall`, `createContributingFactorsObject`, `createContributingFactorsArray`, `drawModal`, `drawBarchart`, `drawCrashes`, `formatCrashTime`, `formatCrashFactors`, `formatCrashVehicles` and the simply-named `draw`.
+On my first pass, I wrote a single, 300-line function, `updateCrashes`, that performed all this work. Sub-optimal. When I refactored, I split the work into 12 smaller functions: `toggleSpinner`, `getUserInput`, `formatQueryString`, `makeAPICall`, `createContributingFactorsObject`, `createContributingFactorsArray`, `showModal`, `drawBarchart`, `drawCrashes`, `formatCrashTime`, `formatCrashFactors`, `formatCrashVehicles` and the simply-named `draw`.
